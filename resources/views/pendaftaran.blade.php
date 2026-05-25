@@ -7,13 +7,15 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #23293a; min-height: 100vh; padding: 1.5rem 2rem; color: rgba(255,255,255,0.95); }
         .container { max-width: 1400px; margin: 0 auto; }
         .main-nav { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
-        .brand { font-size: 1.5rem; font-weight: 800; color: #f59e5b; display: inline-flex; align-items: center; gap: 0.65rem; }
+        .brand { font-size: 1.5rem; font-weight: 800; color: #f59e5b; display: inline-flex; align-items: center; gap: 0.65rem; cursor: pointer; transition: color 0.2s; }
+        .brand:hover { color: #f59e5b; }
         .page-hero { display: block; margin-bottom: 2rem; }
         .page-title { font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; color: #ffffff; }
         .page-subtitle { color: rgba(255,255,255,0.75); margin-bottom: 1rem; }
@@ -31,16 +33,88 @@
         .icon-circle { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; color: #6b7280; box-shadow: 0 4px 10px rgba(2,6,23,0.12); font-size: 0.95rem; }
         .btn-primary { background: #f59e5b; color: #1b1e32; padding: 0.9rem 1.6rem; border-radius: 999px; border: none; font-weight: 700; cursor: pointer; transition: all 0.15s; }
         .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-primary:active { transform: translateY(0); }
         .form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; gap: 1rem; }
         .hidden { display: none; }
-        .sekbid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-        .sekbid-option { background: #1e293b; border: 2px solid rgba(255,255,255,0.05); border-radius: 1rem; padding: 1.2rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
-        .sekbid-option:hover { transform: translateY(-3px); border-color: #f59e5b; }
-        .sekbid-option.selected { background: rgba(245, 158, 91, 0.1); border-color: #f59e5b; }
-        .sekbid-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-        .sekbid-name { font-weight: 600; font-size: 0.9rem; color: #ffffff; }
-        .radio-check { position: absolute; top: 0.5rem; right: 0.5rem; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); }
-        .sekbid-option.selected .radio-check { background: #f59e5b; border-color: #f59e5b; box-shadow: inset 0 0 0 3px #1e293b; }
+        /* Bidang Cards Grid (Step 2) */
+        .sekbid-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .sekbid-option {
+            background: rgba(255,255,255,0.95);
+            border-radius: 1.5rem;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .sekbid-option:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(246,173,85,0.2);
+            border-color: #f6ad55;
+        }
+
+        .sekbid-option.selected {
+            background: linear-gradient(135deg, #f6ad55, #f59e5b);
+            color: white;
+            border-color: #f6ad55;
+        }
+
+        .sekbid-option.selected .sekbid-icon {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .sekbid-option.selected .sekbid-name,
+        .sekbid-option.selected .sekbid-cat-name,
+        .sekbid-option.selected .sekbid-description {
+            color: white;
+        }
+
+        .sekbid-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 0.6rem;
+            background: #f0f4f8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: all 0.3s;
+            color: #2d3748;
+        }
+
+        .sekbid-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .sekbid-cat-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.3rem;
+        }
+
+        .sekbid-description {
+            font-size: 0.75rem;
+            color: #718096;
+            line-height: 1.3;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         
         /* Quiz Layout Styles */
         .quiz-progress-container { background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 1rem; margin-bottom: 1.5rem; }
@@ -71,28 +145,12 @@
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
-<<<<<<< HEAD
             justify-content: center;
             border: 4px solid #ffffff;
         }
         .result-icon-failed {
             color: #ef4444;
             font-size: 5rem !important;
-=======
-            gap: 0.65rem;
-            cursor: pointer;
-        }
-
-        .brand:hover {
-            color: #f59e5b;
-        }
-
-        /* Header / Page Title */
-        .page-hero {
-            display: block;
-            margin-bottom: 2rem;
-            text-align: left;
->>>>>>> f298a52 (sekbid-quiz)
         }
         .result-title-status {
             font-size: 1.6rem;
@@ -101,102 +159,14 @@
             margin-bottom: 0.5rem;
             color: #ffffff;
         }
-<<<<<<< HEAD
         .result-message {
             color: rgba(255, 255, 255, 0.7);
-=======
-
-        .page-subtitle {
-            color: rgba(255,255,255,0.75);
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .title-underline {
-            width: 120px;
-            height: 4px;
-            background: rgba(255,255,255,0.12);
-            border-radius: 4px;
-            margin: 1rem 0 1.6rem;
-        }
-
-        /* Card Style */
-        .card {
-            background: rgba(15,23,42,0.9);
-            border-radius: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.03);
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            width: 100%;
-        }
-
-        .card-body {
-            padding: 2.2rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.2rem;
-            position: relative;
-        }
-
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 0.4rem;
-            color: rgba(255,255,255,0.9);
->>>>>>> f298a52 (sekbid-quiz)
             font-size: 0.95rem;
             max-width: 500px;
             margin: 0 auto 2rem auto;
             line-height: 1.5;
         }
-<<<<<<< HEAD
         .badge-info-container {
-=======
-
-        input, select, textarea {
-            width: 100%;
-            border-radius: 999px;
-            padding: 1rem 1.25rem 1rem 4.5rem;
-            border: none;
-            background: #ffffff;
-            color: #1f2937;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            box-shadow: inset 0 -6px 15px rgba(0,0,0,0.03);
-            transition: all 0.2s;
-            min-height: 3.5rem;
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: #9ca3af;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            box-shadow: 0 6px 18px rgba(99,102,241,0.12);
-            background: #fff;
-        }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-            align-items: start;
-            margin-bottom: 1rem;
-        }
-
-        .icon-circle {
-            position: absolute;
-            left: 0.9rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #ffffff;
->>>>>>> f298a52 (sekbid-quiz)
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -222,7 +192,6 @@
         .btn-dashboard {
             background: #f59e5b;
             color: #1b1e32;
-<<<<<<< HEAD
             padding: 0.9rem 2.5rem;
             border-radius: 999px;
             border: none;
@@ -237,38 +206,11 @@
             filter: brightness(1.1);
         }
         footer { text-align: center; margin-top: 2rem; color: rgba(255,255,255,0.4); font-size: 0.8rem; }
-=======
-            padding: 0.9rem 2rem;
-            border-radius: 999px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(245,158,92,0.18);
-            transition: transform 0.15s, box-shadow 0.15s;
-            font-size: 1rem;
-        }
 
-        .btn-primary:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(245,158,92,0.25);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .form-actions { 
-            display: flex; 
-            justify-content: flex-end; 
-            margin-top: 2rem; 
-            gap: 1rem; 
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 3rem;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.8rem;
+        @media (max-width: 900px) {
+            .sekbid-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
@@ -280,22 +222,24 @@
                 font-size: 2.5rem;
             }
         }
->>>>>>> f298a52 (sekbid-quiz)
+
+        @media (max-width: 600px) {
+            .sekbid-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="main-nav">
-<<<<<<< HEAD
-            <div class="brand"><i class="fas fa-graduation-cap"></i>OSIS</div>
-=======
-            <div class="brand" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> OSIS</div>
->>>>>>> f298a52 (sekbid-quiz)
+            <a href="{{ route('home') }}">
+                <div class="brand"><i class="fas fa-graduation-cap"></i> OSIS</div>
+            </a>
         </header>
 
         <div class="page-hero" id="pageHeroHeader">
             <div class="page-title" id="heroTitle">Data Diri</div>
-<<<<<<< HEAD
             <div class="page-subtitle" id="heroSubtitle">Lengkapi data dirimu dengan lengkap untuk melanjutkan proses pendaftaran calon pengurus OSIS.</div>
             <div class="title-underline"></div>
         </div>
@@ -305,6 +249,7 @@
                 <div class="card-body">
                     <form id="osisForm" onsubmit="event.preventDefault();">
                         
+                        <!-- Step 1: Data Diri -->
                         <div class="step-1">
                             <div class="input-grid">
                                 <div class="form-group">
@@ -333,54 +278,97 @@
                             </div>
                             <div class="form-actions">
                                 <button type="button" id="nextBtn" class="btn-primary">
-                                    Next: Pilih Bidang <i class="fas fa-arrow-right"></i>
+                                    Selanjutnya <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
 
+                        <!-- Step 2: Pilih Sekbid -->
                         <div class="step-2 hidden">
-                            <label>Pilih Seksi Bidang yang Diminati <span class="required">*</span></label>
+                            <label style="max-width: 100%; margin-bottom: 1rem;">Pilih Seksi Bidang yang Diminati <span class="required">*</span></label>
+                            
                             <div class="sekbid-grid" id="sekbidGrid">
+                                <!-- SEKSI BIDANG 1 -->
                                 <div class="sekbid-option" data-id="1" data-nama="Sekbid 1 (Keagamaan)">
-                                    <div class="radio-check"></div>
-                                    <div class="sekbid-icon"><i class="fas fa-mosque" style="color: #4299e1"></i></div>
-                                    <div class="sekbid-name">Sekbid 1 (Keagamaan)</div>
+                                    <div class="sekbid-icon">
+                                        <i class="fas fa-hands-praying"></i>
+                                    </div>
+                                    <div class="sekbid-name">SEKSI BIDANG 1</div>
+                                    <div class="sekbid-cat-name">Keagamaan</div>
+                                    <div class="sekbid-description">
+                                        Mengelola kegiatan yang membangun iman, ketakwaan, dan relevansi siswa dalam kehidupan sehari-hari.
+                                    </div>
                                 </div>
+
+                                <!-- SEKSI BIDANG 2 -->
                                 <div class="sekbid-option" data-id="2" data-nama="Sekbid 2 (Pendidikan & Penalaran)">
-                                    <div class="radio-check"></div>
-                                    <div class="sekbid-icon"><i class="fas fa-brain" style="color: #48bb78"></i></div>
-                                    <div class="sekbid-name">Sekbid 2 (Pendidikan & Penalaran)</div>
+                                    <div class="sekbid-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="sekbid-name">SEKSI BIDANG 2</div>
+                                    <div class="sekbid-cat-name">Pendidikan & Penalaran</div>
+                                    <div class="sekbid-description">
+                                        bertugas meningkatkan wawasan dan kemampuan berpikir siswa melalui diskusi, dan lomba akademik.
+                                    </div>
                                 </div>
-                                <div class="sekbid-option" data-id="3" data-nama="Sekbid 3 (Kepribadian & Wawasan Kebangsaan)">
-                                    <div class="radio-check"></div>
-                                    <div class="sekbid-icon"><i class="fas fa-flag" style="color: #e53e3e"></i></div>
-                                    <div class="sekbid-name">Sekbid 3 (Wawasan Kebangsaan)</div>
+
+                                <!-- SEKSI BIDANG 3 -->
+                                <div class="sekbid-option" data-id="3" data-nama="Sekbid 3 (Wawasan Kebangsaan)">
+                                    <div class="sekbid-icon">
+                                        <i class="fas fa-landmark"></i>
+                                    </div>
+                                    <div class="sekbid-name">SEKSI BIDANG 3</div>
+                                    <div class="sekbid-cat-name">Wawasan Kebangsaan</div>
+                                    <div class="sekbid-description">
+                                        Membentuk karakter siswa yang disiplin, bertanggung jawab jawab, serta menumbuhkan rasa cinta tanah air dan semangat kebangsaan.
+                                    </div>
                                 </div>
+
+                                <!-- SEKSI BIDANG 4 -->
                                 <div class="sekbid-option" data-id="4" data-nama="Sekbid 4 (Olahraga & Kesenian)">
-                                    <div class="radio-check"></div>
-                                    <div class="sekbid-icon"><i class="fas fa-palette" style="color: #ed64a6"></i></div>
-                                    <div class="sekbid-name">Sekbid 4 (Olahraga & Kesenian)</div>
+                                    <div class="sekbid-icon">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <div class="sekbid-name">SEKSI BIDANG 4</div>
+                                    <div class="sekbid-cat-name">Olahraga & Kesenian</div>
+                                    <div class="sekbid-description">
+                                        bertugas mengembangkan bakat siswa melalui kegiatan olahraga dan seni serta mengadakan lomba akademik atau pentas.
+                                    </div>
                                 </div>
-                                <div class="sekbid-option" data-id="5" data-nama="Sekbid 5 (Komunikasi, Informasi & Literasi)">
-                                    <div class="radio-check"></div>
-                                    <div class="sekbid-icon"><i class="fas fa-bullhorn" style="color: #9f7aea"></i></div>
-                                    <div class="sekbid-name">Sekbid 5 (Public Speaking)</div>
+
+                                <!-- SEKSI BIDANG 5 -->
+                                <div class="sekbid-option" data-id="5" data-nama="Sekbid 5 (Public Speaking)">
+                                    <div class="sekbid-icon">
+                                        <i class="fas fa-share-alt"></i>
+                                    </div>
+                                    <div class="sekbid-name">SEKSI BIDANG 5</div>
+                                    <div class="sekbid-cat-name">Komunikasi & Informasi</div>
+                                    <div class="sekbid-description">
+                                        bertugas menyebarkan informasi kegiatan sekolah serta mengadakan media komunikasi seperti majalah atau media sosial sekolah.
+                                    </div>
                                 </div>
-                                <div class="sekbid-option" data-id="6" data-nama="Sekbid 6 (Keterampilan & Wirausaha)">
-                                    <div class="radio-check"></div>
-                                    <div class="sekbid-icon"><i class="fas fa-lightbulb" style="color: #ecc94b"></i></div>
-                                    <div class="sekbid-name">Sekbid 6 (Wirausaha)</div>
+
+                                <!-- SEKSI BIDANG 6 -->
+                                <div class="sekbid-option" data-id="6" data-nama="Sekbid 6 (Wirausaha)">
+                                    <div class="sekbid-icon">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div class="sekbid-name">SEKSI BIDANG 6</div>
+                                    <div class="sekbid-cat-name">Keterampilan & Wirausaha</div>
+                                    <div class="sekbid-description">
+                                        melaksanakan pemberdayaan kreativitas siswa melalui pelatihan dan kegiatan usaha seperti bazar atau market day.
+                                    </div>
                                 </div>
                             </div>
                             <input type="hidden" id="selectedSekbidId">
                             <input type="hidden" id="selectedSekbidNama">
 
                             <div class="form-actions">
-                                <button type="button" id="backToStep1" class="btn-primary" style="background:#4a5568; color:white;">Kembali</button>
-                                <button type="button" id="goToQuizBtn" class="btn-primary">Next: Mulai Kuis <i class="fas fa-bolt"></i></button>
+                                <button type="button" id="goToQuizBtn" class="btn-primary">Selanjutnya <i class="fas fa-bolt"></i></button>
                             </div>
                         </div>
 
+                        <!-- Step 3: Kuis Pilihan Ganda -->
                         <div class="step-3 hidden">
                             <div class="quiz-progress-container">
                                 <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:rgba(255,255,255,0.7)">
@@ -404,6 +392,7 @@
                             </div>
                         </div>
 
+                        <!-- Step 4: Hasil Evaluasi SPK -->
                         <div class="step-4 hidden">
                             <div class="result-container">
                                 
@@ -441,62 +430,15 @@
 
                     </form>
                 </div>
-=======
-            <div class="page-subtitle" id="heroSubtitle">Lengkapi data dirimu dengan lengkap</div>
-            <div class="title-underline"></div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <form method="POST" action="/osis/pendaftaran" id="osisForm">
-                    @csrf
-                    <div class="input-grid">
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <span class="icon-circle"><i class="fas fa-user"></i></span>
-                            <input type="text" id="input_nama" name="nama" value="{{ old('nama') }}" placeholder="Masukkan nama lengkap">
-                        </div>
-
-                        <div class="form-group">
-                            <label>NIS</label>
-                            <span class="icon-circle"><i class="fas fa-id-card"></i></span>
-                            <input type="text" id="input_nis" name="nis" value="{{ old('nis') }}" placeholder="Masukkan NIS">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Kelas</label>
-                            <span class="icon-circle"><i class="fas fa-book-open"></i></span>
-                            <input type="text" id="input_kelas" name="kelas" value="{{ old('kelas') }}" placeholder="Contoh XI PRL 2">
-                        </div>
-
-                        <div class="form-group">
-                            <label>No Handphone</label>
-                            <span class="icon-circle"><i class="fas fa-phone"></i></span>
-                            <input type="text" id="input_nohp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08xxxxxxxxxxxx">
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" id="nextBtn" class="btn-primary">
-                            Selanjutnya
-                        </button>
-                    </div>
-                </form>
->>>>>>> f298a52 (sekbid-quiz)
             </div>
         </div>
 
         <footer>
-<<<<<<< HEAD
             <i class="fas fa-copyright"></i> 2026 - Panitia Seleksi Pengurus OSIS Berbasis Aturan Keputusan SPK
-=======
-            © 2026 Pemilihan OSIS
->>>>>>> f298a52 (sekbid-quiz)
         </footer>
     </div>
 
     <script>
-<<<<<<< HEAD
         const step1 = document.querySelector('.step-1');
         const step2 = document.querySelector('.step-2');
         const step3 = document.querySelector('.step-3');
@@ -560,12 +502,18 @@
         let kuisIndex = 0;
         let jawabanTerpilih = {}; 
 
-        // S1 -> S2
+        // S1 -> S2 dengan Validasi Penuh
         nextBtn.addEventListener('click', () => {
-            if(!document.getElementById('input_nama').value || !document.getElementById('input_kelas').value){
-                Swal.fire('Form Belum Lengkap', 'Harap isi Nama dan Kelas terlebih dahulu!', 'warning');
+            const nama = document.getElementById('input_nama').value.trim();
+            const nis = document.getElementById('input_nis').value.trim();
+            const kelas = document.getElementById('input_kelas').value.trim();
+            const nohp = document.getElementById('input_nohp').value.trim();
+            
+            if (!nama || !nis || !kelas || !nohp) {
+                Swal.fire('Form Belum Lengkap', 'Harap isi semua data diri dengan lengkap terlebih dahulu!', 'warning');
                 return;
             }
+            
             step1.classList.add('hidden');
             step2.classList.remove('hidden');
             heroTitle.innerText = "Pilih Seksi Bidang";
@@ -577,6 +525,7 @@
             step2.classList.add('hidden');
             step1.classList.remove('hidden');
             heroTitle.innerText = "Data Diri";
+            heroSubtitle.innerText = "Lengkapi data dirimu dengan lengkap untuk melanjutkan proses pendaftaran calon pengurus OSIS.";
         });
 
         // Handle Klik Card Sekbid
@@ -655,69 +604,7 @@
                 step3.classList.add('hidden');
                 step2.classList.remove('hidden');
                 heroTitle.innerText = "Pilih Seksi Bidang";
-=======
-        const nextBtn = document.getElementById('nextBtn');
-        const inputNama = document.getElementById('input_nama');
-        const inputNis = document.getElementById('input_nis');
-        const inputKelas = document.getElementById('input_kelas');
-        const inputNoHp = document.getElementById('input_nohp');
-
-        nextBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            // Basic validation
-            if (!inputNama.value.trim()) {
-                alert('Nama lengkap harus diisi!');
-                inputNama.focus();
-                return;
-            }
-            if (!inputNis.value.trim()) {
-                alert('NIS harus diisi!');
-                inputNis.focus();
-                return;
-            }
-            if (!inputKelas.value.trim()) {
-                alert('Kelas harus diisi!');
-                inputKelas.focus();
-                return;
-            }
-            if (!inputNoHp.value.trim()) {
-                alert('No Handphone harus diisi!');
-                inputNoHp.focus();
-                return;
-            }
-
-            // Redirect to pilih_bidang page
-            window.location.href = '/pilih_bidang';
-        });
-
-        // Auto-focus next field when current is filled
-        inputNama.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                inputNis.focus();
-            }
-        });
-
-        inputNis.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                inputKelas.focus();
-            }
-        });
-
-        inputKelas.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                inputNoHp.focus();
-            }
-        });
-
-        inputNoHp.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                nextBtn.click();
->>>>>>> f298a52 (sekbid-quiz)
+                heroSubtitle.innerText = "Silakan tentukan sub-organisasi OSIS yang ingin kamu kembangkan.";
             }
         });
 
